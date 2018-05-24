@@ -17,7 +17,7 @@ router.post('/', checkNotLogin, function (req, res, next) {
     const name = req.fields.name;
     const gender = req.fields.gender;
     const bio = req.fields.bio;
-    const avatar = req.fields.avatar.path.split(path.sep).pop();
+    const avatar = req.files.avatar.path.split(path.sep).pop();
     let password = req.fields.password;
     const repassword = req.fields.repassword;
 
@@ -44,7 +44,7 @@ router.post('/', checkNotLogin, function (req, res, next) {
     } catch (err) {
         // 注册失败，异步删除上传的头像
         fs.unlink(req.files.avatar.path)
-        req.flash('error', e.message)
+        req.flash('error', err.message)
         return res.redirect('/signup')
     }
 
@@ -59,6 +59,7 @@ router.post('/', checkNotLogin, function (req, res, next) {
         bio: bio,
         avatar: avatar
     }
+    
     // 用户信息写入数据库
     UserModel.create(user)
     .then(function (result) {
